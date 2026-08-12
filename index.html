@@ -112,7 +112,7 @@
         .phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100px;height:22px;background:#334155;border-bottom-left-radius:14px;border-bottom-right-radius:14px;z-index:10}
         .zalo-bg{background:#e8ebf0;flex:1;border-radius:18px;padding:32px 8px 8px;overflow-y:auto;color:#1a1a1a;font-size:12px;line-height:1.5}
         .zalo-bubble{background:#fff;border-radius:8px;padding:10px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-        .zalo-cta{background:#f3f4f6;text-align:center;padding:7px;margin-top:6px;border-radius:4px;color:#0068ff;font-weight:500;font-size:12px}
+        .zalo-cta{background:#0068ff;text-align:center;padding:7px;margin-top:6px;border-radius:6px;color:#ffffff;font-weight:600;font-size:12px}
 
         /* TEMPLATE GRID & MODAL */
         .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
@@ -880,8 +880,18 @@ hoặc Mã áp dụng tại tất cả brand (nếu không redeem coupon tuần 
             BD.summaries.filter(s => s.stage !== 'Chưa rõ').forEach((s, i) => {
                 const samples = BD.sampleTemplates[s.group] || [];
                 const sampleHtml = samples.map(t => {
-                    const snippet = (t.previewText || '').substring(0, 120).replace(/</g, '&lt;');
-                    return '<div style="background:rgba(0,0,0,.15);padding:10px;border-radius:8px;font-size:12px;color:var(--text-muted)"><strong style="color:var(--text-secondary)">' + t.oaName + '</strong><br>' + snippet + '...</div>';
+                    let text = t.previewText || '';
+                    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    text = text.replace(/&lt;(.*?)&gt;/g, '<strong style="color:var(--text-primary)">&lt;$1&gt;</strong>');
+                    
+                    let ctaHtml = '';
+                    if (t.ctaTitles) {
+                        ctaHtml = '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">' + 
+                            t.ctaTitles.split('|').map(c => '<span style="background:#0068ff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;color:#ffffff">' + c.trim() + '</span>').join('') + 
+                            '</div>';
+                    }
+
+                    return '<div style="background:var(--bg-deep);border:1px solid var(--border);padding:12px;border-radius:8px;font-size:12px;color:var(--text-secondary);line-height:1.5;white-space:pre-wrap"><strong style="color:var(--accent-teal);display:block;margin-bottom:6px;font-size:13px">' + t.oaName + '</strong>' + text + ctaHtml + '</div>';
                 }).join('');
 
                 const consulting = {
@@ -909,7 +919,6 @@ hoặc Mã áp dụng tại tất cả brand (nếu không redeem coupon tuần 
                     '<div class="uc-row"><strong>Kích hoạt:</strong> ' + (s.trigger || '') + '</div>' +
                     '<div class="uc-row"><strong>Đối tượng:</strong> ' + (s.segment || '') + '</div>' +
                     '<div class="uc-row"><strong>KPI:</strong> <span style="color:var(--accent-teal)">' + (s.kpi || '') + '</span></div>' +
-                    '<div class="uc-row"><strong>Params:</strong> <span style="font-family:monospace;font-size:11px;color:var(--accent-purple)">' + (s.params || '') + '</span></div>' +
                     '<div class="uc-row"><strong>CTAs:</strong> <span style="font-size:12px;color:var(--accent-blue)">' + (s.ctas || '') + '</span></div>' +
                     '</div>' +
                     '<div>' +
@@ -931,7 +940,7 @@ hoặc Mã áp dụng tại tất cả brand (nếu không redeem coupon tuần 
             document.getElementById('modal-params').textContent = tpl.params || '';
             let text = tpl.previewText || '';
             text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            text = text.replace(/&lt;(.*?)&gt;/g, '<strong style="color:var(--accent-blue)">&lt;$1&gt;</strong>');
+            text = text.replace(/&lt;(.*?)&gt;/g, '<strong style="color:var(--text-primary)">&lt;$1&gt;</strong>');
             document.getElementById('modal-text').innerHTML = text;
             
             const ctaBox = document.getElementById('modal-ctas');
